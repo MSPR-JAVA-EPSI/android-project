@@ -20,7 +20,7 @@
         android:adjustViewBounds="true"/>
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/editTextAuth"
         android:layout_below="@+id/ConnectButton"
         android:background="@drawable/roundcorner"
         android:layout_marginTop="25dp"

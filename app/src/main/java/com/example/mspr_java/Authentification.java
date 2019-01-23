@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -27,12 +28,14 @@ public class Authentification extends AppCompatActivity {
 
     static final int REQUEST_TAKE_PHOTO = 1;
     File mCurrentPhotoPath;
+    EditText editTextAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentification);
-        didTapButton(null);
+        editTextAuth = findViewById(R.id.editTextAuth);
+        annimationButton();
         try {
             createImageFile();
         } catch (IOException e) {
@@ -83,7 +86,9 @@ public class Authentification extends AppCompatActivity {
             //DISPLAY LOADING SCREEN TOO
            String bit64 = encode();
            Log.e("Image Bit64",""+bit64);
-
+           String id = editTextAuth.getText().toString();
+           Log.e("IDENTIFIANT","de connexion : "+id);
+           auth(bit64,id); // AUTHENTIFICATION
            /*byte[] imageBytes = Base64.decode(bit64, Base64.DEFAULT);
            Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
            mImageView.setImageBitmap(decodedImage);
@@ -96,7 +101,7 @@ public class Authentification extends AppCompatActivity {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath.getAbsolutePath(), options);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 10, stream);
         byte[] byteFormat = stream.toByteArray();
         // get the base 64 string
         String imgString = Base64.encodeToString(byteFormat, Base64.DEFAULT);
@@ -105,25 +110,30 @@ public class Authentification extends AppCompatActivity {
 
 
     public void didTapButton(View view) {
-        ImageButton button = (ImageButton)findViewById(R.id.ConnectButton);
+        annimationButton();
+        dispatchTakePictureIntent();
+    }
+
+    public void annimationButton(){
+        ImageButton button = findViewById(R.id.ConnectButton);
         final Animation myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
         // Use bounce interpolator with amplitude 0.2 and frequency 20
         MyBounceInterpolator interpolator = new MyBounceInterpolator(0.2, 20);
         myAnim.setInterpolator(interpolator);
         button.startAnimation(myAnim);
-        dispatchTakePictureIntent();
     }
 
-    public void auth(){
+    public void auth(String image,String id){
         ComServerAuth auth = new ComServerAuth(this);
         try {
-            auth.post(getString(R.string.lienAuth));
+            auth.post(getString(R.string.lienAuth),image,id);
         } catch (IOException e) {
             Log.e("Requete post", "sheh");
         }
     }
 
     public void retourAuth(String token){
+        Log.e("TOKEN RETOUR",""+token);
         return;
     }
 }

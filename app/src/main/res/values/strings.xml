@@ -3,7 +3,7 @@
     <string name="large_text">
         tg
     </string>
-    <string name="lienAuth">http://localhost:9991/api/auth/</string>
+    <string name="lienAuth">http://shyndard.eu:8080/auth</string>
     <string name="headerAuth">Content-Type: application/json</string>
     <string name="action_settings">Settings</string>
 </resources>

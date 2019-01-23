@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -25,11 +26,11 @@ public class ComServerAuth {
         this.context = context;
     }
 
-    void post(String url) throws IOException {
+    void post(String url, String image, String id) throws IOException {
 
         RequestBody formBody = new FormBody.Builder()
                 .add("header", context.getString(R.string.headerAuth))
-                .add("data", "")
+                .add("data", "'{ \"image\": \""+image+"\", \"identifier\": \""+id+"\" }'") // --data '{ "image": "image en base 64", "identifier": "identifiant string" }'
                 .build();
 
         Request request = new Request.Builder()
@@ -41,12 +42,12 @@ public class ComServerAuth {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("", "", e);
+                Log.e("ONFAILLURE STARTED :",""+ e);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                context.retourAuth(null);
+                context.retourAuth(response.toString());
             }
         });
 
