@@ -3,21 +3,29 @@ package com.example.mspr_java;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,7 +42,16 @@ public class Authentification extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentification);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
         editTextAuth = findViewById(R.id.editTextAuth);
+        RelativeLayout bgLayout = findViewById(R.id.main_container);
+        AnimationDrawable animationDrawable = (AnimationDrawable) bgLayout.getBackground();
+        animationDrawable.setEnterFadeDuration(3000);
+        animationDrawable.setExitFadeDuration(3000);
+        animationDrawable.start();
         annimationButton();
         try {
             createImageFile();
@@ -111,7 +128,14 @@ public class Authentification extends AppCompatActivity {
 
     public void didTapButton(View view) {
         annimationButton();
-        dispatchTakePictureIntent();
+        if(editTextAuth.getText().toString().isEmpty()||editTextAuth.getText().toString().equals("")){
+            Snackbar.make(view, getString(R.string.toastNoId), Snackbar.LENGTH_LONG)
+                    .show();
+            //Toast.makeText(this, getString(R.string.toastNoId),Toast.LENGTH_LONG).show();
+            getToMainActivity();
+        }else {
+            dispatchTakePictureIntent();
+        }
     }
 
     public void annimationButton(){
@@ -135,5 +159,10 @@ public class Authentification extends AppCompatActivity {
     public void retourAuth(String token){
         Log.e("TOKEN RETOUR",""+token);
         return;
+    }
+
+    public void getToMainActivity(){
+        Intent intent = new Intent(this,Main_Activity.class);
+        startActivity(intent);
     }
 }

@@ -39,6 +39,7 @@ public class ComServerAuth {
                 .build();
         OkHttpClient client = new OkHttpClient();
 
+
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

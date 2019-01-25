@@ -6,4 +6,5 @@
     <string name="lienAuth">http://shyndard.eu:8080/auth</string>
     <string name="headerAuth">Content-Type: application/json</string>
     <string name="action_settings">Settings</string>
+    <string name="toastNoId">Veuillez renseigner un Identifiant</string>
 </resources>
