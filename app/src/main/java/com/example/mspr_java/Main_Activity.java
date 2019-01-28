@@ -65,12 +65,7 @@ public class Main_Activity extends AppCompatActivity {
 
         container.addView(v);
 
-        LinearLayout v2 = (LinearLayout) getLayoutInflater().inflate(R.layout.inflatable_layout_object2, null);
-        v2.setId(View.generateViewId());
 
-        v2.setVisibility(View.VISIBLE);
-
-        container.addView(v2);
     }
 
 
