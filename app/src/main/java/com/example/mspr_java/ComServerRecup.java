@@ -14,9 +14,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.EquipementItemComponent;
+
 public class ComServerRecup {
-    public String get(String url) throws IOException {
+    public String get() throws IOException {
         InputStream is = null;
+        String url = "??";
         try {
             final HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setReadTimeout(10000 /* milliseconds */); // temps laisser pour la lecture
@@ -45,7 +48,7 @@ public class ComServerRecup {
         }
         return response.toString();
     }
-    private List<EquipementItemComponent> parse(final String json) {
+    public List<EquipementItemComponent> parse(final String json) {
         try {
             final List<EquipementItemComponent> products = new ArrayList<>();
             final JSONArray jProductArray = new JSONArray(json);

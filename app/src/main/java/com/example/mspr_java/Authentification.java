@@ -52,8 +52,8 @@ public class Authentification extends AppCompatActivity {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
-        editTextAuth = findViewById(R.id.editTextAuth);
-        RelativeLayout bgLayout = findViewById(R.id.main_container);
+        editTextAuth = (EditText) findViewById(R.id.editTextAuth);
+        RelativeLayout bgLayout = (RelativeLayout) findViewById(R.id.main_container);
         AnimationDrawable animationDrawable = (AnimationDrawable) bgLayout.getBackground();
         animationDrawable.setEnterFadeDuration(3000);
         animationDrawable.setExitFadeDuration(3000);
@@ -168,7 +168,7 @@ public class Authentification extends AppCompatActivity {
     }
 
     public void annimationButton(){
-        ImageButton button = findViewById(R.id.ConnectButton);
+        ImageButton button = (ImageButton) findViewById(R.id.ConnectButton);
         final Animation myAnim = AnimationUtils.loadAnimation(this, R.anim.bounce);
         // Use bounce interpolator with amplitude 0.2 and frequency 20
         MyBounceInterpolator interpolator = new MyBounceInterpolator(0.2, 20);

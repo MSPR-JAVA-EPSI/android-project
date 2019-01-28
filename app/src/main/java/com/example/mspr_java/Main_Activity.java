@@ -44,7 +44,7 @@ public class Main_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main_activity_scrolling);
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,19 +60,26 @@ public class Main_Activity extends AppCompatActivity {
         listenerUp = new OnClickUpListener(listeObjetView);
         ///////////////////////////////////////////////////////
         listeObjetView = new HashMap<View,EquipementItemComponent>();
-        container = findViewById(R.id.linear_container_scroll);
+        container = (LinearLayout) findViewById(R.id.linear_container_scroll);
         inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         retrieveObjects();
     }
 
     public void retrieveObjects(){
-        boolean error = true;
-        List<EquipementItemComponent> listeObject = new ArrayList<EquipementItemComponent>();
-        for (EquipementItemComponent object : listeObject){
-            inflate(object);
-        }
-        if (error)
+        ComServerRecup comServeurRecup = new ComServerRecup();
+        List<EquipementItemComponent> listeObject = null;
+        try {
+            listeObject = comServeurRecup.parse(comServeurRecup.get());
+            for (EquipementItemComponent object : listeObject){
+                inflate(object);
+            }
+        } catch (IOException e) {
             createAlertDialog("Erreur","Impossible de recuperer les objets dans la bdd");
+            e.printStackTrace();
+        }
+        //new ArrayList<EquipementItemComponent>();
+
+
     }
 
     private void createAlertDialog(String titre,String texte) {
