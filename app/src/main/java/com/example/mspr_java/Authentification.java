@@ -67,7 +67,7 @@ public class Authentification extends AppCompatActivity {
             e.printStackTrace();
         }
         //A DEGAGER
-        getToMainActivity();
+        //getToMainActivity();
         //dispatchTakePictureIntent();
     }
 
@@ -75,7 +75,7 @@ public class Authentification extends AppCompatActivity {
         AlertDialog.Builder dialog=new AlertDialog.Builder(this);
         dialog.setMessage("L'authentification a échouée veuillez recommencer");
         dialog.setTitle("Echec de l'Authentification");
-        dialog.setPositiveButton("YES",
+        dialog.setPositiveButton("Ok",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {
