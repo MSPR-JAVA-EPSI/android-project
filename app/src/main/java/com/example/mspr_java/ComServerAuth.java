@@ -31,7 +31,6 @@ public class ComServerAuth {
 
     //-->https://stackoverflow.com/questions/2938502/sending-post-data-in-android
     void post(String url, String image, String id) throws IOException {
-        image = "image64teubs";
         String payload = generateJson(image,id);
         RequestBody formBody = new FormBody.Builder()
                 .add("header", context.getString(R.string.headerAuth))

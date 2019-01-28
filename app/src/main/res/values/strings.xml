@@ -4,6 +4,7 @@
         tg
     </string>
     <string name="lienAuth">http://shyndard.eu:8080/auth</string>
+    <string name="lienGetAll">http://shyndard.eu:8080/item/getAll</string>
     <string name="headerAuth">Content-Type: application/json</string>
     <string name="action_settings">Settings</string>
     <string name="toastNoId">Veuillez renseigner un Identifiant</string>

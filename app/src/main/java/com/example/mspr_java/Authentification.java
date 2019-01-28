@@ -43,6 +43,7 @@ public class Authentification extends AppCompatActivity {
     File mCurrentPhotoPath;
     EditText editTextAuth;
     AlertDialog alertDialog;
+    String token = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +145,7 @@ public class Authentification extends AppCompatActivity {
         byte[] byteFormat = stream.toByteArray();
         // get the base 64 string
         String imgString = Base64.encodeToString(byteFormat, Base64.DEFAULT);
+        imgString = imgString.replace("\\\n","");
         return imgString;
     }
 
@@ -190,6 +192,7 @@ public class Authentification extends AppCompatActivity {
         if(response.code()!=200){
             alertDialogError();
         }
+        token = "SHEEEEEEEEEEEEHHHHHHHHHHHHHHHHHH";
         return;
     }
     private void alertDialogError() {
@@ -200,7 +203,10 @@ public class Authentification extends AppCompatActivity {
         });
     }
     public void getToMainActivity(){
+        if(!token.equals("")){
         Intent intent = new Intent(this,Main_Activity.class);
+        intent.putExtra("token", token);
         startActivity(intent);
+        }
     }
 }

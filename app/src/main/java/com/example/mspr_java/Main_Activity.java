@@ -34,6 +34,7 @@ import model.EquipementItemComponent;
 
 public class Main_Activity extends AppCompatActivity {
 
+    public String token;
     LinearLayout container;
     LayoutInflater inflater;
     Map<View, EquipementItemComponent> listeObjetView;
@@ -42,7 +43,7 @@ public class Main_Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        token = getIntent().getStringExtra("token");
         setContentView(R.layout.main_activity_scrolling);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
