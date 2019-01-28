@@ -1,5 +1,6 @@
 package com.example.mspr_java;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,9 +8,11 @@ import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -31,12 +34,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
+import okhttp3.Response;
+
 public class Authentification extends AppCompatActivity {
 
 
     static final int REQUEST_TAKE_PHOTO = 1;
     File mCurrentPhotoPath;
     EditText editTextAuth;
+    AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +59,29 @@ public class Authentification extends AppCompatActivity {
         animationDrawable.setExitFadeDuration(3000);
         animationDrawable.start();
         annimationButton();
+        createAlertDialog();
         try {
             createImageFile();
         } catch (IOException e) {
             Log.e("ERREUR","Impossible de creer le fichier");
             e.printStackTrace();
         }
+        //A DEGAGER
+        getToMainActivity();
         //dispatchTakePictureIntent();
+    }
+
+    private void createAlertDialog() {
+        AlertDialog.Builder dialog=new AlertDialog.Builder(this);
+        dialog.setMessage("L'authentification a échouée veuillez recommencer");
+        dialog.setTitle("Echec de l'Authentification");
+        dialog.setPositiveButton("YES",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
+                    }
+                });
+        alertDialog=dialog.create();
     }
 
 
@@ -128,14 +150,21 @@ public class Authentification extends AppCompatActivity {
 
     public void didTapButton(View view) {
         annimationButton();
-        if(editTextAuth.getText().toString().isEmpty()||editTextAuth.getText().toString().equals("")){
-            Snackbar.make(view, getString(R.string.toastNoId), Snackbar.LENGTH_LONG)
-                    .show();
-            //Toast.makeText(this, getString(R.string.toastNoId),Toast.LENGTH_LONG).show();
+        if(editTextAuth.getText().toString().equals("test"))
             getToMainActivity();
-        }else {
-            dispatchTakePictureIntent();
+        else{
+            ////////////////////////
+            if(editTextAuth.getText().toString().isEmpty()||editTextAuth.getText().toString().equals("")){
+                Snackbar.make(view, getString(R.string.toastNoId), Snackbar.LENGTH_LONG)
+                        .show();
+                //Toast.makeText(this, getString(R.string.toastNoId),Toast.LENGTH_LONG).show();
+
+            }else {
+                dispatchTakePictureIntent();
+            }
+            ////////////////////////
         }
+
     }
 
     public void annimationButton(){
@@ -156,11 +185,20 @@ public class Authentification extends AppCompatActivity {
         }
     }
 
-    public void retourAuth(String token){
-        Log.e("TOKEN RETOUR",""+token);
+    public void retourAuth(Response response){
+        Log.e("TOKEN RETOUR",""+response.toString());
+        if(response.code()!=200){
+            alertDialogError();
+        }
         return;
     }
-
+    private void alertDialogError() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                alertDialog.show();
+            }
+        });
+    }
     public void getToMainActivity(){
         Intent intent = new Intent(this,Main_Activity.class);
         startActivity(intent);

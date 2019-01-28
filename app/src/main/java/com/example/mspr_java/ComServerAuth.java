@@ -6,9 +6,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import model.DtoOutIdentification;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -26,11 +29,13 @@ public class ComServerAuth {
         this.context = context;
     }
 
+    //-->https://stackoverflow.com/questions/2938502/sending-post-data-in-android
     void post(String url, String image, String id) throws IOException {
-
+        image = "image64teubs";
+        String payload = generateJson(image,id);
         RequestBody formBody = new FormBody.Builder()
                 .add("header", context.getString(R.string.headerAuth))
-                .add("data", "'{ \"image\": \""+image+"\", \"identifier\": \""+id+"\" }'") // --data '{ "image": "image en base 64", "identifier": "identifiant string" }'
+                .add("body", payload) // --data '{ "image": "image en base 64", "identifier": "identifiant string" }'
                 .build();
 
         Request request = new Request.Builder()
@@ -38,6 +43,7 @@ public class ComServerAuth {
                 .method("POST", formBody)
                 .build();
         OkHttpClient client = new OkHttpClient();
+        Log.e("Payload",request.toString() +"\n BODY : "+formBody.toString()+" \nVALUE 1: "+((FormBody) formBody).value(1));
 
 
         client.newCall(request).enqueue(new Callback() {
@@ -48,10 +54,18 @@ public class ComServerAuth {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                context.retourAuth(response.toString());
+                Log.e("RESPONSE",""+response.message());
+                context.retourAuth(response);
             }
         });
 
+    }
+
+    private String generateJson(String image, String id) {
+        DtoOutIdentification dto = new DtoOutIdentification(image,id);
+        Gson gson = new Gson();
+        String payload = gson.toJson(dto);
+        return payload;
     }
 
 }
