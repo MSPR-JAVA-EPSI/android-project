@@ -91,6 +91,8 @@ public class ComServerMain extends AsyncTask {
         super.onPostExecute(o);
         if(instruction.equals("getAll"))
             context.retourComGetAll(response.getStatus(),response.getBody());
+        if(instruction.equals("borrow"))
+            context.retourComBorrow(response.getStatus());
     }
 
     public void print(final String s){

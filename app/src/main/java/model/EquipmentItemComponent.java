@@ -5,33 +5,33 @@ import android.os.Parcelable;
 
 import org.json.JSONObject;
 
-public class EquipementItemComponent implements Parcelable {
+public class EquipmentItemComponent implements Parcelable {
     private int quantity;
     private String name;
     private int id;
 
-    public EquipementItemComponent(JSONObject jObject) {
+    public EquipmentItemComponent(JSONObject jObject) {
         this.quantity = jObject.optInt("max");
         this.name = jObject.optString("name");
         this.id = jObject.optInt("id");
 
     }
 
-    protected EquipementItemComponent(Parcel in) {
+    protected EquipmentItemComponent(Parcel in) {
         quantity = in.readInt();
         name = in.readString();
         id = in.readInt();
     }
 
-    public static final Creator<EquipementItemComponent> CREATOR = new Creator<EquipementItemComponent>() {
+    public static final Creator<EquipmentItemComponent> CREATOR = new Creator<EquipmentItemComponent>() {
         @Override
-        public EquipementItemComponent createFromParcel(Parcel in) {
-            return new EquipementItemComponent(in);
+        public EquipmentItemComponent createFromParcel(Parcel in) {
+            return new EquipmentItemComponent(in);
         }
 
         @Override
-        public EquipementItemComponent[] newArray(int size) {
-            return new EquipementItemComponent[size];
+        public EquipmentItemComponent[] newArray(int size) {
+            return new EquipmentItemComponent[size];
         }
     };
 
@@ -71,12 +71,6 @@ public class EquipementItemComponent implements Parcelable {
         dest.writeInt(quantity);
         dest.writeString(name);
         dest.writeInt(id);
-    }
-    public boolean allowedClickedDown() {
-        return false;
-    }
-    public boolean allowedClickedUp() {
-        return false;
     }
 }
 
