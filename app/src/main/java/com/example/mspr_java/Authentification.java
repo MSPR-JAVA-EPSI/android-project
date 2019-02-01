@@ -1,5 +1,6 @@
 package com.example.mspr_java;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,11 +18,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -30,11 +33,15 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import okhttp3.Response;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Authentification extends AppCompatActivity {
 
@@ -44,7 +51,8 @@ public class Authentification extends AppCompatActivity {
     EditText editTextAuth;
     AlertDialog alertDialog;
     String token = "";
-
+    RelativeLayout mainContainer;
+    RelativeLayout loadingScreen;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +61,7 @@ public class Authentification extends AppCompatActivity {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
+        mainContainer=(RelativeLayout)findViewById(R.id.main_container);
         editTextAuth = (EditText) findViewById(R.id.editTextAuth);
         RelativeLayout bgLayout = (RelativeLayout) findViewById(R.id.main_container);
         AnimationDrawable animationDrawable = (AnimationDrawable) bgLayout.getBackground();
@@ -124,48 +133,51 @@ public class Authentification extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             //DISPLAY LOADING SCREEN TOO
-           String bit64 = encode();
-           Log.e("Image Bit64",""+bit64);
+           String image = encode();
+           Log.e("Image ",""+image);
            String id = editTextAuth.getText().toString();
            Log.e("IDENTIFIANT","de connexion : "+id);
-           auth(bit64,id); // AUTHENTIFICATION
-           /*byte[] imageBytes = Base64.decode(bit64, Base64.DEFAULT);
-           Bitmap decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-           mImageView.setImageBitmap(decodedImage);
-           */
+           auth(image,id);
+
         }
     }
 
     private String encode(){
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath.getAbsolutePath(), options);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 10, stream);
-        byte[] byteFormat = stream.toByteArray();
-        // get the base 64 string
-        String imgString = Base64.encodeToString(byteFormat, Base64.DEFAULT);
-        imgString = imgString.replace("\\\n","");
-        return imgString;
+        File file = new File(mCurrentPhotoPath.getAbsolutePath());
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String returnStr = "";
+        try {
+            returnStr = new String(bytes,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            Log.e("ERREUR","Unsupported encoding exception");
+        }
+        return returnStr;
     }
-
-
     public void didTapButton(View view) {
         annimationButton();
-        if(editTextAuth.getText().toString().equals("test"))
-            getToMainActivity();
-        else{
-            ////////////////////////
-            if(editTextAuth.getText().toString().isEmpty()||editTextAuth.getText().toString().equals("")){
-                Snackbar.make(view, getString(R.string.toastNoId), Snackbar.LENGTH_LONG)
-                        .show();
+
+        ////////////////////////
+        if(editTextAuth.getText().toString().isEmpty()||editTextAuth.getText().toString().equals("")){
+            Snackbar.make(view, getString(R.string.toastNoId), Snackbar.LENGTH_LONG)
+                    .show();
                 //Toast.makeText(this, getString(R.string.toastNoId),Toast.LENGTH_LONG).show();
 
-            }else {
-                dispatchTakePictureIntent();
-            }
-            ////////////////////////
+        }else {
+            dispatchTakePictureIntent();
         }
+        ////////////////////////
+
 
     }
 
@@ -181,18 +193,52 @@ public class Authentification extends AppCompatActivity {
     public void auth(String image,String id){
         ComServerAuth auth = new ComServerAuth(this);
         try {
-            auth.post(getString(R.string.lienAuth),image,id);
-        } catch (IOException e) {
-            Log.e("Requete post", "sheh");
+            //auth.post(getString(R.string.lienAuth),image,id);
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
+            auth.request("auth", headers,auth.generateJson(image,id));
+            startLoadingScreen();
+        } catch (Exception e) {
+            Toast.makeText(this, "Erreur d'authentification",
+                    Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
 
-    public void retourAuth(Response response){
-        Log.e("TOKEN RETOUR",""+response.toString());
-        if(response.code()!=200){
-            alertDialogError();
+    private void startLoadingScreen() {
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        RelativeLayout loadingScreenContainer = (RelativeLayout) inflater.inflate(R.layout.loading_screen, mainContainer,false);
+        ImageView loadingImage = (ImageView)loadingScreenContainer.getChildAt(1);
+        mainContainer.addView(loadingScreenContainer);
+        RotateAnimation rotate = new RotateAnimation(
+                0, 720,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f
+        );
+        rotate.setDuration(1000);
+        rotate.setRepeatCount(Animation.INFINITE);
+        loadingImage.startAnimation(rotate);
+        loadingScreen=loadingScreenContainer;
+
+    }
+
+    private void stopLoadingScreen(){
+        if(loadingScreen!=null){
+            mainContainer.removeView(loadingScreen);
         }
-        token = "SHEEEEEEEEEEEEHHHHHHHHHHHHHHHHHH";
+
+    }
+
+    public void retourAuth(int code, String token){
+        Log.e("TOKEN RETOUR",""+token);
+        stopLoadingScreen();
+        if(code!=200){
+            alertDialogError();
+        }else{
+            this.token = token;
+            getToMainActivity();
+        }
+
         return;
     }
     private void alertDialogError() {

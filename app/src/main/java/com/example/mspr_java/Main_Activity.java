@@ -24,6 +24,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import model.EquipementItemComponent;
+import model.ListeEquipement;
 
 public class Main_Activity extends AppCompatActivity {
 
@@ -56,6 +59,7 @@ public class Main_Activity extends AppCompatActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        Toast.makeText(this, "Connecté",Toast.LENGTH_LONG).show();
         //Passage de la liste par reference
         listenerDown = new OnClickDownListener(listeObjetView);
         listenerUp = new OnClickUpListener(listeObjetView);
@@ -67,17 +71,17 @@ public class Main_Activity extends AppCompatActivity {
     }
 
     public void retrieveObjects(){
-        ComServerRecup comServeurRecup = new ComServerRecup();
-        List<EquipementItemComponent> listeObject = null;
+        ComServerMain comServeurMain = new ComServerMain(this);
         try {
-            listeObject = comServeurRecup.parse(comServeurRecup.get());
-            for (EquipementItemComponent object : listeObject){
-                inflate(object);
-            }
-        } catch (IOException e) {
-            createAlertDialog("Erreur","Impossible de recuperer les objets dans la bdd");
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
+            headers.put("Authorization","Bearer "+token);
+            comServeurMain.request("item/getAll", headers,"body","getAll");
+        }catch(Exception e){
+            Log.e("TOUT CASSSé","erreur lors de la requete getAllItems (retrieveObjects in Main_activity)");
             e.printStackTrace();
         }
+
         //new ArrayList<EquipementItemComponent>();
 
 
@@ -126,4 +130,21 @@ public class Main_Activity extends AppCompatActivity {
         return 666;
     }
 
+    public void retourComGetAll(int status, String body) {
+        if(status!=200){
+            createAlertDialog("Erreur","Impossible de recuperer les Equipements");
+        }else {
+            Gson gson = new Gson();
+            List<EquipementItemComponent> listeObject = (gson.fromJson(body, ListeEquipement.class)).getListe();
+            try {
+                for (EquipementItemComponent object : listeObject) {
+                    inflate(object);
+                }
+                throw new IOException();
+            } catch (Exception e) {
+                createAlertDialog("Erreur", "Impossible de recuperer les Equipements");
+                e.printStackTrace();
+            }
+        }
+    }
 }

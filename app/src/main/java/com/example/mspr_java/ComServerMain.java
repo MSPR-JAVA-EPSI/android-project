@@ -13,11 +13,11 @@ import model.Response;
 import utils.FullResponseBuilder;
 
 
-public class ComServerAuth extends AsyncTask {
+public class ComServerMain extends AsyncTask {
 
-    private Authentification context;
+    private Main_Activity context;
 
-    public ComServerAuth(Authentification context) {
+    public ComServerMain(Main_Activity context) {
         this.context = context;
     }
 
@@ -27,12 +27,14 @@ public class ComServerAuth extends AsyncTask {
     Map<String, String> headers;
     String body;
     Response response; //FAIRE UN AFTTERBACKGROUNDMACHIN
+    String instruction;
 
 
-    public void request(String path, Map<String, String> headers, String body) {
+    public void request(String path, Map<String, String> headers, String body, String instruction){
         this.path = path;
         this.headers = headers;
         this.body = body;
+        this.instruction = instruction;
         execute(this);
     }
     public HttpURLConnection setRequestHeaders(HttpURLConnection con, Map<String, String> headers) {
@@ -87,7 +89,8 @@ public class ComServerAuth extends AsyncTask {
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
-        context.retourAuth(response.getStatus(),response.getBody());
+        if(instruction.equals("getAll"))
+            context.retourComGetAll(response.getStatus(),response.getBody());
     }
 
     public void print(final String s){
