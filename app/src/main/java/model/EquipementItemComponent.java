@@ -6,22 +6,19 @@ import android.os.Parcelable;
 import org.json.JSONObject;
 
 public class EquipementItemComponent implements Parcelable {
-    private int valeur;
-    private int max;
+    private int quantity;
     private String name;
     private int id;
 
     public EquipementItemComponent(JSONObject jObject) {
-        this.valeur = jObject.optInt("valeur");
-        this.max = jObject.optInt("max");
+        this.quantity = jObject.optInt("max");
         this.name = jObject.optString("name");
         this.id = jObject.optInt("id");
 
     }
 
     protected EquipementItemComponent(Parcel in) {
-        valeur = in.readInt();
-        max = in.readInt();
+        quantity = in.readInt();
         name = in.readString();
         id = in.readInt();
     }
@@ -38,8 +35,8 @@ public class EquipementItemComponent implements Parcelable {
         }
     };
 
-    public int getValeur() {
-        return valeur;
+    public int getQuantity() {
+        return quantity;
     }
 
     public int getId() {
@@ -50,21 +47,15 @@ public class EquipementItemComponent implements Parcelable {
         this.id = id;
     }
 
-    public int getMax() {
-        return max;
-    }
 
     public String getName() {
         return name;
     }
 
-    public void setValeur(int valeur){
-        this.valeur = valeur;
+    public void setQuantity(int quantity){
+        this.quantity = quantity;
     }
 
-    public void setMax(int max) {
-        this.max = max;
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -77,8 +68,7 @@ public class EquipementItemComponent implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(valeur);
-        dest.writeInt(max);
+        dest.writeInt(quantity);
         dest.writeString(name);
         dest.writeInt(id);
     }

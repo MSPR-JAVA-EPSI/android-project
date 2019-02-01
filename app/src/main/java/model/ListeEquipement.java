@@ -3,17 +3,17 @@ package model;
 import java.util.List;
 
 public class ListeEquipement {
-    private List<EquipementItemComponent> liste;
+    private List<EquipementItemComponent> equipements;
 
-    public ListeEquipement(List<EquipementItemComponent> liste) {
-        this.liste = liste;
+    public ListeEquipement(List<EquipementItemComponent> equipements) {
+        this.equipements = equipements;
     }
-    public List<EquipementItemComponent> getListe() {
-        return liste;
+    public List<EquipementItemComponent> getEquipements() {
+        return equipements;
     }
 
-    public void setListe(List<EquipementItemComponent> liste) {
-        this.liste = liste;
+    public void setEquipements(List<EquipementItemComponent> equipements) {
+        this.equipements = equipements;
     }
 
 }

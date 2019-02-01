@@ -21,10 +21,10 @@ public class OnClickUpListener implements View.OnClickListener {
         EquipementItemComponent item;
         item = listeObjetView.get(v.getParent());
         int oldValue = (Integer.valueOf(((EditText) ((LinearLayout) v.getParent()).getChildAt(3)).getText().toString()));
-        if(oldValue < item.getMax() && oldValue >0) {
+        if(item.getQuantity()>0) {
             if (item.allowedClickedUp()) {
                 String newvalue = "" + (oldValue + 1);
-                ((TextView) ((LinearLayout) v.getParent()).getChildAt(1)).setText(item.getValeur() + "/" + item.getMax());
+                ((TextView) ((LinearLayout) v.getParent()).getChildAt(1)).setText(item.getQuantity() + "dispo");
                 ((EditText) ((LinearLayout) v.getParent()).getChildAt(3)).setText(newvalue);
             }
         }

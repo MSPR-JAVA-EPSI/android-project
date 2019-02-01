@@ -76,6 +76,7 @@ public class Main_Activity extends AppCompatActivity {
             Map<String, String> headers = new HashMap<>();
             headers.put("Content-Type", "application/json");
             headers.put("Authorization","Bearer "+token);
+            Log.e("header","Bearer "+token);
             comServeurMain.request("item/getAll", headers,"body","getAll");
         }catch(Exception e){
             Log.e("TOUT CASSSé","erreur lors de la requete getAllItems (retrieveObjects in Main_activity)");
@@ -102,27 +103,30 @@ public class Main_Activity extends AppCompatActivity {
 
     /*A CHANGER LES TYPES ETC*/
     private void inflate(EquipementItemComponent item) {
+        Log.e("Inflating Item",item.toString());
         LinearLayout v = (LinearLayout) inflater.inflate(R.layout.inflatable_layout_object, container,false);
         v.setId(View.generateViewId());
-
-        int nbMesItems = getNombreMesItems(item);
+        Log.e("Useless","1");
+        String nbMesItems = getNombreMesItems(item)+"";
 
         TextView label = (TextView) v.getChildAt(0);
         TextView nbDispo = (TextView) v.getChildAt(1);
         ImageButton buttonDown = (ImageButton)v.getChildAt(2);
         EditText numberSelected = (EditText) v.getChildAt(3);
         ImageButton buttonUp =(ImageButton)v.getChildAt(4);
-
+        Log.e("Useless","2");
         label.setText(item.getName());
-        nbDispo.setText(item.getValeur()+"/"+item.getMax());
+        nbDispo.setText(item.getQuantity()+"Dispo");
+        Log.e("Useless","3");
         buttonDown.setOnClickListener(listenerDown);
+        Log.e("Useless","4");
         numberSelected.setText(nbMesItems);
         buttonUp.setOnClickListener(listenerUp);
-
 
         v.setVisibility(View.VISIBLE);
         container.addView(v);
         listeObjetView.put(v,item);
+
 
     }
 
@@ -135,15 +139,14 @@ public class Main_Activity extends AppCompatActivity {
             createAlertDialog("Erreur","Impossible de recuperer les Equipements");
         }else {
             Gson gson = new Gson();
-            List<EquipementItemComponent> listeObject = (gson.fromJson(body, ListeEquipement.class)).getListe();
+            List<EquipementItemComponent> listeObject = (gson.fromJson(body, ListeEquipement.class)).getEquipements();
             try {
                 for (EquipementItemComponent object : listeObject) {
                     inflate(object);
                 }
-                throw new IOException();
             } catch (Exception e) {
                 createAlertDialog("Erreur", "Impossible de recuperer les Equipements");
-                e.printStackTrace();
+                Log.e("Exception",e.toString());
             }
         }
     }

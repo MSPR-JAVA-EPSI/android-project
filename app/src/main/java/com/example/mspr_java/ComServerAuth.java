@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import model.DtoOutIdentification;
+import model.DtoToken;
 import model.Response;
 import utils.FullResponseBuilder;
 
@@ -77,6 +78,7 @@ public class ComServerAuth extends AsyncTask {
 
 
             response = FullResponseBuilder.getFullResponse(con);
+
             print("Response :"+ response.toString());
         }catch(Exception e){
             print("ERREUR :"+e.toString());
@@ -87,7 +89,9 @@ public class ComServerAuth extends AsyncTask {
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
-        context.retourAuth(response.getStatus(),response.getBody());
+        Gson gson = new Gson();
+        String token = (gson.fromJson(response.getBody(), DtoToken.class)).getToken();
+        context.retourAuth(response.getStatus(),token);
     }
 
     public void print(final String s){
