@@ -196,7 +196,7 @@ public class Authentification extends AppCompatActivity {
 
         ////////////////////////
         if(editTextAuth.getText().toString().isEmpty()||editTextAuth.getText().toString().equals("")){
-            Snackbar.make(view, getString(R.string.toastNoId), Snackbar.LENGTH_LONG)
+            Snackbar.make(mainContainer, getString(R.string.toastNoId), Snackbar.LENGTH_LONG)
                     .show();
                 //Toast.makeText(this, getString(R.string.toastNoId),Toast.LENGTH_LONG).show();
 

@@ -52,6 +52,18 @@ public class ComServerMain extends AsyncTask {
 
 
     @Override
+    protected void onCancelled(Object o) {
+        super.onCancelled(o);
+        print("CANCELLED : "+instruction);
+    }
+
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        print("CANCELLED : "+instruction);
+    }
+
+    @Override
     protected Object doInBackground(Object[] objects) {
         try {
             URL url = new URL("http://shyndard.eu:8080/" + path);
@@ -89,10 +101,15 @@ public class ComServerMain extends AsyncTask {
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
+        print("OnPostExecute : "+instruction);
+        if(instruction.equals("getBorrows"))
+            context.retourComGetBorrows(response.getStatus(),response.getBody());
         if(instruction.equals("getAll"))
             context.retourComGetAll(response.getStatus(),response.getBody());
         if(instruction.equals("borrow"))
             context.retourComBorrow(response.getStatus());
+        if(instruction.equals("return"))
+            context.retourComReturn(response.getStatus());
     }
 
     public void print(final String s){

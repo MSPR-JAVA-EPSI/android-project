@@ -8,27 +8,29 @@ import android.widget.TextView;
 
 import java.util.Map;
 
+import model.Equipment;
 import model.EquipmentItemComponent;
 
 public class OnClickUpListener implements View.OnClickListener {
-    Map<View, EquipmentItemComponent> listeObjetView;
+    Map<View, Equipment> listeObjetView;
 
-    public OnClickUpListener(Map<View, EquipmentItemComponent> listeObjetView) {
+    public OnClickUpListener(Map<View, Equipment> listeObjetView) {
         this.listeObjetView = listeObjetView;
     }
 
     @Override
     public void onClick(View v) {
+        Equipment equipment = listeObjetView.get(v.getParent());
         EquipmentItemComponent item;
-        item = listeObjetView.get(v.getParent());
+        item = equipment.getEquipment();
 
-        int oldValue = (Integer.valueOf(((EditText) ((LinearLayout) v.getParent()).getChildAt(3)).getText().toString()));
+        int oldValue = equipment.getBorrowed();
+        int newvalue =  (oldValue + 1);
         if(item.getQuantity()>0) {
-
-                String newvalue = "" + (oldValue + 1);
-                item.setQuantity(item.getQuantity()-1);
-                ((TextView) ((LinearLayout) v.getParent()).getChildAt(1)).setText(item.getQuantity() + " libre");
-                ((EditText) ((LinearLayout) v.getParent()).getChildAt(3)).setText(newvalue);
+            item.setQuantity(item.getQuantity()-1);
+            equipment.setBorrowed(newvalue);
+            ((TextView)((LinearLayout)v.getParent()).getChildAt(1)).setText((item.getQuantity())+" libre");
+            ((EditText) ((LinearLayout) v.getParent()).getChildAt(3)).setText(newvalue+"");
 
         }
     }
