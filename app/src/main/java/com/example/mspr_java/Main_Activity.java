@@ -2,32 +2,24 @@ package com.example.mspr_java;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,6 +29,7 @@ import java.util.Map;
 import model.Equipment;
 import model.EquipmentItemComponent;
 import model.ListeEquipment;
+import utils.ComServerMain;
 
 public class Main_Activity extends AppCompatActivity {
 
@@ -90,7 +83,7 @@ public class Main_Activity extends AppCompatActivity {
             Log.e("header","Bearer "+token);
             comServeurMain.request("item/getBorrows", headers,"body","getBorrows");
         }catch(Exception e){
-            Log.e("TOUT CASSSé","erreur lors de la requete getBorrows (retrieveBorrows in Main_activity)");
+            Log.e("Exception","erreur lors de la requete getBorrows (retrieveBorrows in Main_activity)"+e.toString());
             e.printStackTrace();
         }
     }
@@ -115,7 +108,7 @@ public class Main_Activity extends AppCompatActivity {
             Log.e("header","Bearer "+token);
             comServeurMain.request("item/getAll", headers,"body","getAll");
         }catch(Exception e){
-            Log.e("TOUT CASSSé","erreur lors de la requete getAllItems (retrieveObjects in Main_activity)");
+            Log.e("Exception","erreur lors de la requete getAllItems (retrieveObjects in Main_activity)"+e.toString());
             e.printStackTrace();
         }
 
@@ -225,7 +218,7 @@ public class Main_Activity extends AppCompatActivity {
                 comServerMain.request(pathBorrow, headers, json, "borrow");
             } catch (Exception e) {
                 createAlertDialog("Erreur", "Erreur lors de l'envoi de la requette au serveur, réessayez");
-                Log.e("TOUT CASSSé", "erreur lors de la requete borrow (borrow() in Main_activity)");
+                Log.e("logErreurDialog", "erreur lors de la requete borrow (borrow() in Main_activity)");
                 e.printStackTrace();
                 attenteBorrow=false;
                 if(!attenteReturn){
@@ -249,7 +242,7 @@ public class Main_Activity extends AppCompatActivity {
                 comServerMain.request(pathReturn, headers, json, "return");
             } catch (Exception e) {
                 createAlertDialog("Erreur", "Erreur lors de l'envoi de la requette au serveur, réessayez");
-                Log.e("TOUT CASSSé", "erreur lors de la requete return (return() in Main_activity)");
+                Log.e("logErrorDialog", "erreur lors de la requete return (return() in Main_activity)");
                 e.printStackTrace();
                 attenteReturn=false;
                 if(!attenteBorrow){

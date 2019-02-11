@@ -1,10 +1,10 @@
-package com.example.mspr_java;
+package utils;
 
-class MyBounceInterpolator implements android.view.animation.Interpolator {
+public class MyBounceInterpolator implements android.view.animation.Interpolator {
     private double mAmplitude = 1;
     private double mFrequency = 10;
 
-    MyBounceInterpolator(double amplitude, double frequency) {
+    public MyBounceInterpolator(double amplitude, double frequency) {
         mAmplitude = amplitude;
         mFrequency = frequency;
     }

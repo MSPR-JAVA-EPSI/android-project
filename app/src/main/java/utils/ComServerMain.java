@@ -1,7 +1,9 @@
-package com.example.mspr_java;
+package utils;
 
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.example.mspr_java.Main_Activity;
 import com.google.gson.Gson;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -9,16 +11,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import model.DtoOutIdentification;
-import model.DtoToken;
 import model.Response;
 import utils.FullResponseBuilder;
 
 
-public class ComServerAuth extends AsyncTask {
+public class ComServerMain extends AsyncTask {
 
-    private Authentification context;
+    private Main_Activity context;
 
-    public ComServerAuth(Authentification context) {
+    public ComServerMain(Main_Activity context) {
         this.context = context;
     }
 
@@ -28,12 +29,14 @@ public class ComServerAuth extends AsyncTask {
     Map<String, String> headers;
     String body;
     Response response; //FAIRE UN AFTTERBACKGROUNDMACHIN
+    String instruction;
 
 
-    public void request(String path, Map<String, String> headers, String body) {
+    public void request(String path, Map<String, String> headers, String body, String instruction){
         this.path = path;
         this.headers = headers;
         this.body = body;
+        this.instruction = instruction;
         execute(this);
     }
     public HttpURLConnection setRequestHeaders(HttpURLConnection con, Map<String, String> headers) {
@@ -49,6 +52,18 @@ public class ComServerAuth extends AsyncTask {
         return payload;
     }
 
+
+    @Override
+    protected void onCancelled(Object o) {
+        super.onCancelled(o);
+        print("CANCELLED : "+instruction);
+    }
+
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        print("CANCELLED : "+instruction);
+    }
 
     @Override
     protected Object doInBackground(Object[] objects) {
@@ -78,7 +93,6 @@ public class ComServerAuth extends AsyncTask {
 
 
             response = FullResponseBuilder.getFullResponse(con);
-
             print("Response :"+ response.toString());
         }catch(Exception e){
             print("ERREUR :"+e.toString());
@@ -88,15 +102,16 @@ public class ComServerAuth extends AsyncTask {
 
     @Override
     protected void onPostExecute(Object o) {
-        try {
-            super.onPostExecute(o);
-            Gson gson = new Gson();
-            String token = (gson.fromJson(response.getBody(), DtoToken.class)).getToken();
-            context.retourAuth(response.getStatus(), token);
-        }catch (Exception e){
-            print("Echec d'authentification");
-            context.retourAuth(404,"");
-        }
+        super.onPostExecute(o);
+        print("OnPostExecute : "+instruction);
+        if(instruction.equals("getBorrows"))
+            context.retourComGetBorrows(response.getStatus(),response.getBody());
+        if(instruction.equals("getAll"))
+            context.retourComGetAll(response.getStatus(),response.getBody());
+        if(instruction.equals("borrow"))
+            context.retourComBorrow(response.getStatus());
+        if(instruction.equals("return"))
+            context.retourComReturn(response.getStatus());
     }
 
     public void print(final String s){
