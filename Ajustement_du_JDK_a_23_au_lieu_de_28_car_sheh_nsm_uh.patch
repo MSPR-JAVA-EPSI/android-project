@@ -1,0 +1,112 @@
+Index: app/src/main/java/com/example/mspr_java/Main_Activity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/mspr_java/Main_Activity.java	(revision 51bcdc5cd78c2e52cde888c75e77444678c63b8e)
++++ app/src/main/java/com/example/mspr_java/Main_Activity.java	(date 1548686766941)
+@@ -44,7 +44,7 @@
+         super.onCreate(savedInstanceState);
+ 
+         setContentView(R.layout.main_activity_scrolling);
+-        FloatingActionButton fab = findViewById(R.id.fab);
++        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+         fab.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+@@ -60,19 +60,27 @@
+         listenerUp = new OnClickUpListener(listeObjetView);
+         ///////////////////////////////////////////////////////
+         listeObjetView = new HashMap<View,EquipementItemComponent>();
+-        container = findViewById(R.id.linear_container_scroll);
++        container = (LinearLayout) findViewById(R.id.linear_container_scroll);
+         inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+         retrieveObjects();
+     }
+ 
+     public void retrieveObjects(){
+         boolean error = true;
+-        List<EquipementItemComponent> listeObject = new ArrayList<EquipementItemComponent>();
+-        for (EquipementItemComponent object : listeObject){
+-            inflate(object);
+-        }
+-        if (error)
++        ComServerRecup comServeurRecup = new ComServerRecup();
++        List<EquipementItemComponent> listeObject = null;
++        try {
++            listeObject = comServeurRecup.parse(comServeurRecup.get());
++            for (EquipementItemComponent object : listeObject){
++                inflate(object);
++            }
++        } catch (IOException e) {
+             createAlertDialog("Erreur","Impossible de recuperer les objets dans la bdd");
++            e.printStackTrace();
++        }
++        //new ArrayList<EquipementItemComponent>();
++
++
+     }
+ 
+     private void createAlertDialog(String titre,String texte) {
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/build.gradle	(revision 51bcdc5cd78c2e52cde888c75e77444678c63b8e)
++++ app/build.gradle	(date 1548686345821)
+@@ -1,11 +1,11 @@
+ apply plugin: 'com.android.application'
+ 
+ android {
+-    compileSdkVersion 28
++    compileSdkVersion 23
+     defaultConfig {
+         applicationId "com.example.mspr_java"
+         minSdkVersion 23
+-        targetSdkVersion 28
++        targetSdkVersion 23
+         versionCode 1
+         versionName "1.0"
+         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+@@ -20,8 +20,8 @@
+ 
+ dependencies {
+     implementation fileTree(dir: 'libs', include: ['*.jar'])
+-    implementation 'com.android.support:appcompat-v7:28.0.0'
+-    implementation 'com.android.support:design:28.0.0'
++    implementation 'com.android.support:appcompat-v7:23.0.0'
++    implementation 'com.android.support:design:23.0.0'
+     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+     testImplementation 'junit:junit:4.12'
+     androidTestImplementation 'com.android.support.test:runner:1.0.2'
+Index: app/src/main/java/com/example/mspr_java/ComServerRecup.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/mspr_java/ComServerRecup.java	(revision 51bcdc5cd78c2e52cde888c75e77444678c63b8e)
++++ app/src/main/java/com/example/mspr_java/ComServerRecup.java	(date 1548686681147)
+@@ -14,9 +14,12 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ 
++import model.EquipementItemComponent;
++
+ public class ComServerRecup {
+-    public String get(String url) throws IOException {
++    public String get() throws IOException {
+         InputStream is = null;
++        String url = "??";
+         try {
+             final HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+             conn.setReadTimeout(10000 /* milliseconds */); // temps laisser pour la lecture
+@@ -45,7 +48,7 @@
+         }
+         return response.toString();
+     }
+-    private List<EquipementItemComponent> parse(final String json) {
++    public List<EquipementItemComponent> parse(final String json) {
+         try {
+             final List<EquipementItemComponent> products = new ArrayList<>();
+             final JSONArray jProductArray = new JSONArray(json);
