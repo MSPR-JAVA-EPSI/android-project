@@ -2,6 +2,8 @@ package com.example.mspr_java;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -9,11 +11,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +38,8 @@ import utils.ComServerMain;
 public class Main_Activity extends AppCompatActivity {
 
     public String token;
+    private String nom;
+    private String image;
     LinearLayout container;
     LayoutInflater inflater;
     Map<View, Equipment> listeObjetView;
@@ -42,12 +48,25 @@ public class Main_Activity extends AppCompatActivity {
     OnClickUpListener listenerUp;
     boolean attenteBorrow = false;
     boolean attenteReturn = false;
+    List<EquipmentItemComponent> listeAttenteBorrowed;
+    List<EquipmentItemComponent> listeAttenteReturned;
+    private TextView textViewNom;
+    private ImageView photoImageButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        token = getIntent().getStringExtra("token");
         setContentView(R.layout.main_activity_scrolling);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        token = getIntent().getStringExtra("token");
+        nom = getIntent().getStringExtra("nom");
+        image = getIntent().getStringExtra("image");
+        //
+        textViewNom = (TextView) findViewById(R.id.NomMainActivity);
+        photoImageButton = (ImageView) findViewById(R.id.imageViewMainActivity);
+
+
+
+        FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,6 +81,15 @@ public class Main_Activity extends AppCompatActivity {
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         Toast.makeText(this, "Connecté",Toast.LENGTH_LONG).show();
+
+        textViewNom.setText(""+nom);
+        try {
+            byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            photoImageButton.setImageBitmap(decodedByte);
+        }catch(Exception e){
+            photoImageButton.setImageDrawable(getDrawable(R.drawable.logo));
+        }
         //Passage de la liste par reference
         listeObjetView = new HashMap<View,Equipment>();
 
@@ -182,8 +210,6 @@ public class Main_Activity extends AppCompatActivity {
             return;
         }
 
-        String pathBorrow = "/item/borrow";
-        String pathReturn = "/item/returnBorrows";
         Collection<Equipment> coll = listeObjetView.values();
         List<EquipmentItemComponent> listBorrowed = new ArrayList<>();
         List<EquipmentItemComponent> listReturned = new ArrayList<>();
@@ -199,60 +225,71 @@ public class Main_Activity extends AppCompatActivity {
                 e.setQuantity(-(e.getQuantity()));
                 listReturned.add(e);
             }
-
         }
-        ComServerMain comServerMain = new ComServerMain(this);
-        if(listBorrowed.size()>0)
+        if(listBorrowed.size()>0){
             attenteBorrow=true;
-        if(listReturned.size()>0)
+            listeAttenteBorrowed = listBorrowed;
+        }
+        if(listReturned.size()>0){
             attenteReturn=true;
-
+            listeAttenteReturned = listReturned;
+        }
         if (attenteBorrow) {
-            try {
-                Gson gson = new Gson();
-                String json = gson.toJson(new ListeEquipment(listBorrowed));
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + token);
-                Log.e("borrow", "Bearer " + token);
-                comServerMain.request(pathBorrow, headers, json, "borrow");
-            } catch (Exception e) {
-                createAlertDialog("Erreur", "Erreur lors de l'envoi de la requette au serveur, réessayez");
-                Log.e("logErreurDialog", "erreur lors de la requete borrow (borrow() in Main_activity)");
-                e.printStackTrace();
-                attenteBorrow=false;
-                if(!attenteReturn){
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            recreate();
-                        }
-                    }, 2000);
-                }
+            requeteBorrow();
+        }else if(attenteReturn) {
+            requeteReturn();
+        }
+    }
+
+    public void requeteBorrow(){
+        try {
+            String pathBorrow = "/item/borrow";
+            ComServerMain comServerMain = new ComServerMain(this);
+            Gson gson = new Gson();
+            String json = gson.toJson(new ListeEquipment(listeAttenteBorrowed));
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
+            headers.put("Authorization", "Bearer " + token);
+            Log.e("borrow", "Bearer " + token);
+            comServerMain.request(pathBorrow, headers, json, "borrow");
+        } catch (Exception e) {
+            createAlertDialog("Erreur", "Erreur lors de l'envoi de la requette au serveur, réessayez");
+            Log.e("logErreurDialog", "erreur lors de la requete borrow (borrow() in Main_activity)");
+            e.printStackTrace();
+            attenteBorrow=false;
+            if(!attenteReturn){
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        recreate();
+                    }
+                }, 2000);
             }
         }
-        if (attenteReturn) {
-            try {
-                Gson gson = new Gson();
-                String json = gson.toJson(new ListeEquipment(listReturned));
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + token);
-                Log.e("return", "Bearer " + token);
-                comServerMain.request(pathReturn, headers, json, "return");
-            } catch (Exception e) {
-                createAlertDialog("Erreur", "Erreur lors de l'envoi de la requette au serveur, réessayez");
-                Log.e("logErrorDialog", "erreur lors de la requete return (return() in Main_activity)");
-                e.printStackTrace();
-                attenteReturn=false;
-                if(!attenteBorrow){
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-                            recreate();
-                        }
-                    }, 2000);
-                }
+    }
+    public void requeteReturn(){
+        try {
+            String pathReturn = "/item/returnBorrows";
+            ComServerMain comServerMain = new ComServerMain(this);
+            Gson gson = new Gson();
+            String json = gson.toJson(new ListeEquipment(listeAttenteReturned));
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
+            headers.put("Authorization", "Bearer " + token);
+            Log.e("return", "Bearer " + token);
+            comServerMain.request(pathReturn, headers, json, "return");
+        } catch (Exception e) {
+            createAlertDialog("Erreur", "Erreur lors de l'envoi de la requette au serveur, réessayez");
+            Log.e("logErrorDialog", "erreur lors de la requete return (return() in Main_activity)");
+            e.printStackTrace();
+            attenteReturn=false;
+            if(!attenteBorrow){
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        recreate();
+                    }
+                }, 2000);
             }
         }
     }
@@ -268,6 +305,8 @@ public class Main_Activity extends AppCompatActivity {
                         recreate();
                     }
                 }, 2000);
+            }else{
+                requeteReturn();
             }
         }else{
             final AlertDialog alert = createAlertDialog("Erreur","Erreur lors de l'emprunt, veuillez ressaisir les objets empruntés");
@@ -275,10 +314,16 @@ public class Main_Activity extends AppCompatActivity {
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
-                        alert.cancel();
+                        try {
+                            alert.cancel();
+                        }catch(Exception e){
+                            //Si l'alerte n'existe plus
+                        }
                         recreate();
                     }
                 }, 4000);
+            }else{
+                requeteReturn();
             }
 
         }
@@ -295,6 +340,8 @@ public class Main_Activity extends AppCompatActivity {
                         recreate();
                     }
                 }, 2000);
+            }else{
+                requeteBorrow();
             }
         }else{
             final AlertDialog alert = createAlertDialog("Erreur","Erreur lors du retour, veuillez ressaisir les objets retournés");
@@ -302,10 +349,16 @@ public class Main_Activity extends AppCompatActivity {
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
-                        alert.cancel();
+                        try {
+                            alert.cancel();
+                        }catch(Exception e){
+                            //Si l'alerte n'existe plus
+                        }
                         recreate();
                     }
                 }, 4000);
+            }else{
+                requeteBorrow();
             }
 
         }

@@ -40,6 +40,7 @@
                 android:layout_gravity="center">
                 <TextView
                     android:layout_width="1dp"
+                    android:id="@+id/NomMainActivity"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textAlignment="center"
@@ -52,13 +53,14 @@
                     android:text="Clément Fassot"/>
 
                 <ImageView
-                    android:id="@+id/imageView"
+                    android:id="@+id/imageViewMainActivity"
                     android:layout_width="125dp"
                     android:layout_height="125dp"
-                    android:layout_margin="10dp"
+                    android:layout_margin="15dp"
                     android:padding="15dp"
                     android:background="@drawable/roundcorner"
-                    android:src="@drawable/logo" />
+                    android:src="@drawable/logo"
+                    android:scaleType="centerCrop"/>
             </LinearLayout>
 
         </android.support.design.widget.CollapsingToolbarLayout>

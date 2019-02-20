@@ -92,11 +92,14 @@ public class ComServerAuth extends AsyncTask {
         try {
             super.onPostExecute(o);
             Gson gson = new Gson();
-            String token = (gson.fromJson(response.getBody(), DtoToken.class)).getToken();
-            context.retourAuth(response.getStatus(), token);
+            DtoToken dtoToken = (gson.fromJson(response.getBody(), DtoToken.class));
+            String token = dtoToken.getToken();
+            String nom = dtoToken.getFullname();
+            String image = dtoToken.getImage();
+            context.retourAuth(response.getStatus(), token, nom, image);
         }catch (Exception e){
             print("Echec d'authentification");
-            context.retourAuth(404,"");
+            context.retourAuth(404,"" ,"","");
         }
     }
 
