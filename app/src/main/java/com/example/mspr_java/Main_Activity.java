@@ -80,7 +80,7 @@ public class Main_Activity extends AppCompatActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        Toast.makeText(this, "Connecté",Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Actualisé",Toast.LENGTH_LONG).show();
 
         textViewNom.setText(""+nom);
         try {
@@ -100,6 +100,7 @@ public class Main_Activity extends AppCompatActivity {
         container = (LinearLayout) findViewById(R.id.linear_container_scroll);
         inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         retrieveBorrows();
+        setEasterEgg();
     }
 
     public void retrieveBorrows(){
@@ -377,5 +378,27 @@ public class Main_Activity extends AppCompatActivity {
         AlertDialog alertDialog= dialog.create();
         alertDialog.show();
         return alertDialog;
+    }
+
+    private void setEasterEgg(){
+        final Main_Activity context = this;
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    EasterEgg ee = new EasterEgg(context, container, textViewNom);
+                    ee.firstItemListener(container.getChildAt(0));
+                    ee.longClickListener(photoImageButton);
+                }catch (Exception e){
+
+                }
+            }
+        }).start();
+
     }
 }

@@ -61,8 +61,8 @@ public class ComServerAuth extends AsyncTask {
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con = setRequestHeaders(con, headers);
-            con.setConnectTimeout(20000);
-            con.setReadTimeout(20000);
+            con.setConnectTimeout(200000);
+            con.setReadTimeout(200000);
             con.setDoOutput(true);
 
             if (body != null) {

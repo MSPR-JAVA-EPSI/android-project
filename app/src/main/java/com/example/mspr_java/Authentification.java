@@ -259,6 +259,8 @@ public class Authentification extends AppCompatActivity {
 
     private void startLoadingScreen() {
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        relativeAuth.getChildAt(0).setVisibility(View.INVISIBLE);
+        relativeAuth.getChildAt(1).setVisibility(View.INVISIBLE);
         RelativeLayout loadingScreenContainer = (RelativeLayout) inflater.inflate(R.layout.loading_screen, relativeAuth,false);
         ImageView loadingImage = (ImageView)loadingScreenContainer.getChildAt(1);
         relativeAuth.addView(loadingScreenContainer);
@@ -278,12 +280,15 @@ public class Authentification extends AppCompatActivity {
         });
         loadingScreen=loadingScreenContainer;
 
+
     }
 
     private void stopLoadingScreen(){
         if(loadingScreen!=null){
             relativeAuth.removeView(loadingScreen);
         }
+        relativeAuth.getChildAt(0).setVisibility(View.VISIBLE);
+        relativeAuth.getChildAt(1).setVisibility(View.VISIBLE);
 
     }
 
