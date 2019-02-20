@@ -391,9 +391,11 @@ public class Main_Activity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 try {
-                    EasterEgg ee = new EasterEgg(context, container, textViewNom);
-                    ee.firstItemListener(container.getChildAt(0));
-                    ee.longClickListener(photoImageButton);
+                    if(container.getChildCount()>1) {
+                        EasterEgg ee = new EasterEgg(context, container, textViewNom);
+                        ee.firstItemListener(container.getChildAt(0));
+                        ee.longClickListener(photoImageButton);
+                    }
                 }catch (Exception e){
 
                 }

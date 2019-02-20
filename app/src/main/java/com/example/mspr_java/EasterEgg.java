@@ -77,16 +77,25 @@ public class EasterEgg {
             byte[] decodedString = Base64.decode(base64img, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
             photoImageButton.setImageBitmap(decodedByte);
+            rotate = new RotateAnimation(
+                    0, 360,
+                    Animation.RELATIVE_TO_SELF, 0.7f,
+                    Animation.RELATIVE_TO_SELF, 0.2f
+            );
+            rotate.setDuration(5000);
+            rotate.setRepeatCount(Animation.INFINITE);
+            photoImageButton.startAnimation(rotate);
+
         }catch(Exception e){
 
         }
 
         rotate = new RotateAnimation(
-                0, 720,
+                0, -720,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f
         );
-        rotate.setDuration(10000);
+        rotate.setDuration(7000);
         rotate.setRepeatCount(Animation.INFINITE);
         nom.startAnimation(rotate);
 
@@ -105,38 +114,38 @@ public class EasterEgg {
             String txt = "Sheh";
             nbDispo.setText(txt);
             rotate = new RotateAnimation(
-                    0, (float)random(0.1,1500),
+                    0, (float)random(0.1,1000),
                     Animation.RELATIVE_TO_SELF, (float)random(0.1,2),
                     Animation.RELATIVE_TO_SELF, (float)random(0.1,2)
             );
-            rotate.setDuration((long)random(100,1500));
+            rotate.setDuration((long)random(500,1500));
             rotate.setRepeatCount(Animation.INFINITE);
             buttonUp.startAnimation(rotate);
             buttonUp.setOnClickListener(listener);
             rotate = new RotateAnimation(
-                    0, (float)random(0.1,1500),
+                    0, (float)random(0.1,1000),
                     Animation.RELATIVE_TO_SELF, (float)random(0.1,2),
                     Animation.RELATIVE_TO_SELF, (float)random(0.1,2)
             );
-            rotate.setDuration((long)random(200,1500));
+            rotate.setDuration((long)random(500,1500));
             rotate.setRepeatCount(Animation.INFINITE);
             nbDispo.startAnimation(rotate);
             numberSelected.setText("Sheh");
             rotate = new RotateAnimation(
-                    0, (float)random(0.1,1500),
+                    0, (float)random(0.1,1000),
                     Animation.RELATIVE_TO_SELF, (float)random(0.1,2),
                     Animation.RELATIVE_TO_SELF, (float)random(0.1,2)
             );
-            rotate.setDuration((long)random(100,1500));
+            rotate.setDuration((long)random(500,1500));
             rotate.setRepeatCount(Animation.INFINITE);
             buttonUp.startAnimation(rotate);
             buttonUp.setOnClickListener(listener);
             rotate = new RotateAnimation(
-                    0, (float)random(0.1,1500),
+                    0, (float)random(0.1,1000),
                     Animation.RELATIVE_TO_SELF, (float)random(0.1,2),
                     Animation.RELATIVE_TO_SELF, (float)random(0.1,2)
             );
-            rotate.setDuration((long)random(100,1500));
+            rotate.setDuration((long)random(500,1500));
             rotate.setRepeatCount(Animation.INFINITE);
             buttonDown.startAnimation(rotate);
             buttonDown.setOnClickListener(listener);
